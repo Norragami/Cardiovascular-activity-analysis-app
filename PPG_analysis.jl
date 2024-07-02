@@ -2,10 +2,10 @@ using Plots
 using DSP
 using Statistics
 using JSON
-include("D:\\Juliawork\\readbin.jl")
-include("D:\\Juliawork\\slide_mean_filter.jl")
-include("D:\\Juliawork\\variabilities.jl")
-include("D:\\Juliawork\\Sensitivity_and_PPV.jl")
+include("readbin.jl")
+include("slide_mean_filter.jl")
+include("Variabilities.jl")
+include("Sensitivity_and_PPV.jl")
 filepath = raw"D:\Juliawork\Мельникова_Елизавета_Дмитриевна2_21-04-22_13-02-11_.hdr"
 num_ch, fs, ibeg, iend, timestart, names, lsbs, units, type = readhdr(filepath)
 named_channels, fs, timestart, units = readbin(filepath)
@@ -131,7 +131,7 @@ for i in collect(1:length(SIG))
    THR_SIG = 0.325*NOISE_LEV + 0.25*(SIG_LEV - NOISE_LEV)  
 end
 
-Peaks_x= collect(Iterators.flatten(peaks_detected)) # Переходим от "вектора векторов" к простому вектору значений
+# Peaks_x= collect(Iterators.flatten(peaks_detected)) # Переходим от "вектора векторов" к простому вектору значений
 
 
 #f=reduce(vcat, peaks_detected)

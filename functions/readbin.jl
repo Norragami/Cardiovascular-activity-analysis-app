@@ -17,20 +17,20 @@ ecg = named_channels.LR ./ 1000
 
 
 
-const string2datatype = Dict{String, DataType}(
-    "int8"    => Int8,
-    "uint8"   => UInt8,
-    "int16"   => Int16,
-    "uint16"  => UInt16,
-    "int32"   => Int32,
-    "uint32"  => UInt32,
-    "int64"   => Int64,
-    "uint64"  => UInt64,
-    "float"   => Float32,
-    "float32" => Float32,
-    "double"  => Float64,
-    "float64" => Float64
-)
+# const string2datatype = Dict{String, DataType}(
+#     "int8"    => Int8,
+#     "uint8"   => UInt8,
+#     "int16"   => Int16,
+#     "uint16"  => UInt16,
+#     "int32"   => Int32,
+#     "uint32"  => UInt32,
+#     "int64"   => Int64,
+#     "uint64"  => UInt64,
+#     "float"   => Float32,
+#     "float32" => Float32,
+#     "double"  => Float64,
+#     "float64" => Float64
+# )
 
 """
 ������ hdr-����� ���������

@@ -1,20 +1,8 @@
-using Plots
-using DSP
-using Statistics
-using JSON
-<<<<<<< HEAD
-include("D:\\Juliawork\\diplom\\readbin.jl")
-include("D:\\Juliawork\\diplom\\slide_mean_filter.jl")
-include("D:\\Juliawork\\diplom\\Variabilities.jl")
-include("D:\\Juliawork\\diplom\\Sensitivity_and_PPV.jl")
-filepath = raw"D:\Juliawork\Мельникова_Елизавета_Дмитриевна2_21-04-22_13-02-11_.hdr"
-=======
-include("readbin.jl")
-include("slide_mean_filter.jl")
-include("Variabilities.jl")
-include("Sensitivity_and_PPV.jl")
+
+
+
+include("functions/functions.jl")
 filepath = raw"signals/Мельникова_Елизавета_Дмитриевна_21-04-22_11-43-20_.hdr"
->>>>>>> 847dde08c9fff914dce716f51a05a8571258f2de
 num_ch, fs, ibeg, iend, timestart, names, lsbs, units, type = readhdr(filepath)
 named_channels, fs, timestart, units = readbin(filepath)
 
@@ -346,71 +334,22 @@ Mins = ap_Mins_x_updt_end ./ fs
 Peaks = ap_Peaks_x_updt_end ./ fs
 
 # TODO не брать пики идущие непосредственно до и после "плохих" участков сигнала
-# найти положения дикротических впадин
+
 # рассчитать значения сердечного выброса на каждом ударе
 
-# написать функцию принимающую положения макс. и мин. пульсовой волны давления
-# и возвращающую положения дикротических впадин
-
-
-
-function detectDecroticNotch(signal::Vector{Float64}, ap_peaksX::Vector{Int64}, ap_minsX::Vector{Int64})
-    notchesXCoordinates = fill(0, length(ap_peaksX))
-    notchesYCoordinates = fill(0.0, length(ap_peaksX))
-    temp = Derivate(signal)
-
-    for i in 1:length(ap_peaksX)
-        
-        # tempX=collect(ap_peaksX[i]:ap_minsX[i])
-        Min=minimum(temp[ap_peaksX[i]:ap_minsX[i]])
-        firstMinimum = ap_peaksX[i] + findfirst(x->x==Min, temp[ap_peaksX[i]:ap_minsX[i]])
-        k=0
-        range = collect(firstMinimum:ap_minsX[i])
-        roughNotch=maximum(temp[firstMinimum:ap_minsX[i]])
-        for j in range
-            if temp[j] == roughNotch
-                notchesXCoordinates[i]=j
-                notchesYCoordinates[i]=temp[j]
-            end
-        end
-        
-        
-    end
-    notchesXCoordinates_updt = fill(0, length(notchesXCoordinates))
-    notchesYCoordinates_updt = fill(0.0, length(notchesXCoordinates))
-    for m in eachindex(notchesXCoordinates)
-        Min = minimum(signal[notchesXCoordinates[m]-250 : notchesXCoordinates[m]+100])
-        range = collect(notchesXCoordinates[m]-250 : notchesXCoordinates[m]+100)
-        for n in range
-            if signal[n] == Min
-                notchesXCoordinates_updt[m] = n
-                notchesYCoordinates_updt[m] = signal[n]
-            end
-        end
-
-    end
-    return notchesXCoordinates_updt, notchesYCoordinates_updt
-end
-
-notchesXCoordinates, notchesYCoordinates = detectDecroticNotch(ap_bandpassed, ap_Peaks_x_updt, ap_Mins_x_updt)
-
+#Вызов функции для нахождения дикротических впадин
+notchesXCoordinates_updt_end,notchesYCoordinates_updt_end = detectDecroticNotch(ap0,ap_bandpassed, ap_Peaks_x_updt, ap_Mins_x_updt)
 
 temp = Derivate(ap_bandpassed)
-plot([ap_bandpassed],layout=(1,1),legend=false)
-scatter!(ap_Peaks_x_updt_end, ap_Peaks_y_updt_end)
+
+plot([ap0],layout=(1,1),legend=false)
+scatter!(ap_Peaks_x_updt, ap_Peaks_y_updt)
 scatter!(ap_Mins_x_updt_end, ap_Mins_y_updt_end)
-scatter!(notchesXCoordinates, notchesYCoordinates)
+
+scatter!(notchesXCoordinates_updt_end, notchesYCoordinates_updt_end)
+
 temp=collect(ap_Peaks_x_updt_end[1]:ap_Mins_x_updt_end[1])
 plot!([ap0[ap_Peaks_x_updt_end[1]:ap_Mins_x_updt_end[1]]],layout=(1,1),legend=false)
 plot(collect(1:length(temp)),fill(mean(ap0[ap_Peaks_x_updt_end[1]:ap_Mins_x_updt_end[1]]),length(temp)),layout=(1,1),legend=false)
 ap_Peaks_x_updt
 ap_Mins_x_updt
-
-function Derivate(signal::Vector{Float64})
-
-    range3=collect(3:length(signal)-2)
-    ecg_derivated=fill(0.0,length(signal))
-    for i in range3
-    ecg_derivated[i]= (1/8)*(-signal[i-2]-2*signal[i-1]+2*signal[i+1]+signal[i+2])
-    end
-return ecg_derivated end

@@ -1,14 +1,7 @@
-using Plots
-using DSP
-using Statistics
-using JSON
+include("functions/functions.jl")
 
-using DataFrames
-using CSV
-include("readbin.jl")
-include("slide_mean_filter.jl")
-include("Variabilities.jl")
-include("Sensitivity_and_PPV.jl")
+
+
 filepath = raw"signals/Мельникова_Елизавета_Дмитриевна_21-04-22_11-43-20_.hdr"
 num_ch, fs, ibeg, iend, timestart, names, lsbs, units, type = readhdr(filepath)
 named_channels, fs, timestart, units = readbin(filepath)

@@ -1,12 +1,8 @@
-using Plots
-using DSP
-using Statistics
-using JSON
-include("readbin.jl")
-include("slide_mean_filter.jl")
-include("Variabilities.jl")
-include("Sensitivity_and_PPV.jl")
-filepath = raw"D:\Juliawork\Мельникова_Елизавета_Дмитриевна2_21-04-22_13-02-11_.hdr"
+
+
+
+include("functions/functions.jl")
+filepath = raw"signals\Мельникова_Елизавета_Дмитриевна2_21-04-22_13-02-11_.hdr"
 num_ch, fs, ibeg, iend, timestart, names, lsbs, units, type = readhdr(filepath)
 named_channels, fs, timestart, units = readbin(filepath)
 

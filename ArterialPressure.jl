@@ -2,10 +2,10 @@ using Plots
 using DSP
 using Statistics
 using JSON
-include("D:\\Juliawork\\readbin.jl")
-include("D:\\Juliawork\\slide_mean_filter.jl")
-include("D:\\Juliawork\\Variabilities.jl")
-include("D:\\Juliawork\\Sensitivity_and_PPV.jl")
+include("D:\\Juliawork\\diplom\\readbin.jl")
+include("D:\\Juliawork\\diplom\\slide_mean_filter.jl")
+include("D:\\Juliawork\\diplom\\Variabilities.jl")
+include("D:\\Juliawork\\diplom\\Sensitivity_and_PPV.jl")
 filepath = raw"D:\Juliawork\Мельникова_Елизавета_Дмитриевна2_21-04-22_13-02-11_.hdr"
 num_ch, fs, ibeg, iend, timestart, names, lsbs, units, type = readhdr(filepath)
 named_channels, fs, timestart, units = readbin(filepath)

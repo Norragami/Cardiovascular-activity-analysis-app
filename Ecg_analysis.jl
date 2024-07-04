@@ -2,14 +2,14 @@ using Plots
 using DSP
 using Statistics
 using JSON
-using FFTW
+
 using DataFrames
 using CSV
-include("D:\\Juliawork\\diplom\\readbin.jl")
-include("D:\\Juliawork\\diplom\\slide_mean_filter.jl")
-include("D:\\Juliawork\\diplom\\Variabilities.jl")
-include("D:\\Juliawork\\diplom\\Sensitivity_and_PPV.jl")
-filepath = raw"D:\Juliawork\diplom\signals\Евстафьева_Анастасия_Васильевна_28-04-22_10-44-28_.hdr"
+include("readbin.jl")
+include("slide_mean_filter.jl")
+include("Variabilities.jl")
+include("Sensitivity_and_PPV.jl")
+filepath = raw"signals/Мельникова_Елизавета_Дмитриевна_21-04-22_11-43-20_.hdr"
 num_ch, fs, ibeg, iend, timestart, names, lsbs, units, type = readhdr(filepath)
 named_channels, fs, timestart, units = readbin(filepath)
 
@@ -79,6 +79,7 @@ a = [1, -1]
 ecg_vspom3=filt(PolynomialRatio(b,a),ecg_vspom1)
 =#
 #Производная
+
 function Derivate(signal::Vector{Float64})
 
     range3=collect(3:length(signal)-2)

@@ -18,6 +18,7 @@ function detectDecroticNotch(signal_raw::Vector{Float64}, signal_bandpassed::Vec
             if temp[j] == roughNotch
                 notchesXCoordinates[i] = j
                 notchesYCoordinates[i] = temp[j]
+                break
             end
         end
 
@@ -26,8 +27,8 @@ function detectDecroticNotch(signal_raw::Vector{Float64}, signal_bandpassed::Vec
     notchesXCoordinates_updt = fill(0, length(notchesXCoordinates))
     notchesYCoordinates_updt = fill(0.0, length(notchesXCoordinates))
     for m in eachindex(notchesXCoordinates)
-        Min = minimum(signal_bandpassed[notchesXCoordinates[m]-250:notchesXCoordinates[m]])
-        range = collect(notchesXCoordinates[m]-250:notchesXCoordinates[m])
+        Min = minimum(signal_bandpassed[notchesXCoordinates[m]-100:notchesXCoordinates[m]])
+        range = collect(notchesXCoordinates[m]-100:notchesXCoordinates[m])
         for n in range
             if signal_bandpassed[n] == Min
                 notchesXCoordinates_updt[m] = n
@@ -42,8 +43,8 @@ function detectDecroticNotch(signal_raw::Vector{Float64}, signal_bandpassed::Vec
 
     notchesXCoordinates_updt_end_raw = notchesXCoordinates_updt .+ 12449
     for m in eachindex(notchesXCoordinates_updt_end_raw)
-        Min = minimum(signal_raw[notchesXCoordinates_updt_end_raw[m]-250:notchesXCoordinates_updt_end_raw[m]])
-        range = collect(notchesXCoordinates_updt_end_raw[m]-250:notchesXCoordinates_updt_end_raw[m])
+        Min = minimum(signal_raw[notchesXCoordinates_updt_end_raw[m]-100:notchesXCoordinates_updt_end_raw[m]])
+        range = collect(notchesXCoordinates_updt_end_raw[m]-100:notchesXCoordinates_updt_end_raw[m])
         for n in range
             if signal_raw[n] == Min
                 notchesXCoordinates_updt_end[m] = n

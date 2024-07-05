@@ -2,7 +2,7 @@
 
 
 include("functions/functions.jl")
-filepath = raw"signals/Мельникова_Елизавета_Дмитриевна_21-04-22_11-43-20_.hdr"
+filepath = raw"D:\Julia\Juliaworks\Cardiovascular-activity-analysis-app\signals\Мельникова_Елизавета_Дмитриевна_21-04-22_13-02-11_.hdr"
 num_ch, fs, ibeg, iend, timestart, names, lsbs, units, type = readhdr(filepath)
 named_channels, fs, timestart, units = readbin(filepath)
 
@@ -333,17 +333,22 @@ f = reduce(vcat, peaks_detected)
 Mins = ap_Mins_x_updt_end ./ fs
 Peaks = ap_Peaks_x_updt_end ./ fs
 
-# TODO не брать пики идущие непосредственно до и после "плохих" участков сигнала
+# TODO не брать пики идущие непосредственно до и после "плохих" участков сигнала!!!
 
 # рассчитать значения сердечного выброса на каждом ударе
 
+#Удалить первую впадину и последний минимум -> предусмотреть чтобы ошибочное определение впадин не шло в расчет
+#Первый минимум соответствует второму максимуму и второй дикротической впадине соответствует первому минимуму
+
+# Sa = 2 - 3.5 см2 -> 300 мм2
+# L = 120 мм
 #Вызов функции для нахождения дикротических впадин
 notchesXCoordinates_updt_end,notchesYCoordinates_updt_end = detectDecroticNotch(ap0,ap_bandpassed, ap_Peaks_x_updt, ap_Mins_x_updt)
 
 temp = Derivate(ap_bandpassed)
 
 plot([ap0],layout=(1,1),legend=false)
-scatter!(ap_Peaks_x_updt, ap_Peaks_y_updt)
+scatter!(ap_Peaks_x_updt_end, ap_Peaks_y_updt_end)
 scatter!(ap_Mins_x_updt_end, ap_Mins_y_updt_end)
 
 scatter!(notchesXCoordinates_updt_end, notchesYCoordinates_updt_end)
@@ -353,3 +358,38 @@ plot!([ap0[ap_Peaks_x_updt_end[1]:ap_Mins_x_updt_end[1]]],layout=(1,1),legend=fa
 plot(collect(1:length(temp)),fill(mean(ap0[ap_Peaks_x_updt_end[1]:ap_Mins_x_updt_end[1]]),length(temp)),layout=(1,1),legend=false)
 ap_Peaks_x_updt
 ap_Mins_x_updt
+
+ap_Mins_x_updt_end
+ap_Peaks_x_updt_end
+notchesXCoordinates_updt_end
+
+
+function calculateStrokeVolume(Sa::Float64,L::Float64,signal::Vector{Float64},notchesXCoordinates::Vector{Int64},apPeaksXCoordinates::Vector{Int64},apMinsXCoordinates::Vector{Int64})
+    strokeVolumes = fill(0.0, length(apMinsXCoordinates))
+
+    for i in 1:length(apMinsXCoordinates)
+        if (apMinsXCoordinates[i]+1000 < length(signal)) && (i+1 < length(notchesXCoordinates))&&(i+1 < length(apPeaksXCoordinates))
+            
+            if (notchesXCoordinates[i+1] - apMinsXCoordinates[i] > 100)&&(notchesXCoordinates[i+1] - apMinsXCoordinates[i] < 1000)
+                
+                P_dic_mean = sum(signal[apMinsXCoordinates[i]:notchesXCoordinates[i+1]])/length(apMinsXCoordinates[i]:notchesXCoordinates[i+1])
+                temp = P_dic_mean/signal[apPeaksXCoordinates[i+1]]
+                
+                strokeVolumes[i] = Sa * L * temp / 1000 #Результат будет в миллилитрах
+            end
+        end
+
+    end
+    
+ return strokeVolumes
+
+end
+
+
+
+
+#907 мм2 площадь сечения аорты для девушки (34 мм диаметр), 120 мм ширина манжеты (подобрано)
+
+strokeVolumes = calculateStrokeVolume(907.0, 120.0, ap0, notchesXCoordinates_updt_end, ap_Peaks_x_updt_end, ap_Mins_x_updt_end)
+bar(strokeVolumes,fillColor=:blue)
+

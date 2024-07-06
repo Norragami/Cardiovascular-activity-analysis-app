@@ -2,7 +2,7 @@
 
 
 include("functions/functions.jl")
-filepath = raw"D:\Julia\Juliaworks\Cardiovascular-activity-analysis-app\signals\Мельникова_Елизавета_Дмитриевна_21-04-22_13-02-11_.hdr"
+filepath = raw"signals\Мельникова_Елизавета_Дмитриевна2_21-04-22_13-02-11_.hdr"
 num_ch, fs, ibeg, iend, timestart, names, lsbs, units, type = readhdr(filepath)
 named_channels, fs, timestart, units = readbin(filepath)
 
@@ -353,37 +353,25 @@ scatter!(ap_Mins_x_updt_end, ap_Mins_y_updt_end)
 
 scatter!(notchesXCoordinates_updt_end, notchesYCoordinates_updt_end)
 
-temp=collect(ap_Peaks_x_updt_end[1]:ap_Mins_x_updt_end[1])
-plot!([ap0[ap_Peaks_x_updt_end[1]:ap_Mins_x_updt_end[1]]],layout=(1,1),legend=false)
-plot(collect(1:length(temp)),fill(mean(ap0[ap_Peaks_x_updt_end[1]:ap_Mins_x_updt_end[1]]),length(temp)),layout=(1,1),legend=false)
-ap_Peaks_x_updt
-ap_Mins_x_updt
+time = collect(80:1/fs:100)
+
+Peaks = ap_Peaks_x_updt_end ./ fs
+Mins = ap_Mins_x_updt_end ./ fs
+Notches=notchesXCoordinates_updt_end ./ fs
+
+plot([ap0],title="Артериальное давление", ylabel="Давление, мм рт.ст.", xlabel="Время, с",layout=(1,1),legend=false)
+scatter!(Peaks[55:78],ap_Peaks_y_updt_end[55:78])
+scatter!(Mins[55:78],ap_Mins_y_updt_end[55:78])
+scatter!(Notches[55:78],notchesYCoordinates_updt_end[55:78])
+
+
+
 
 ap_Mins_x_updt_end
 ap_Peaks_x_updt_end
 notchesXCoordinates_updt_end
 
 
-function calculateStrokeVolume(Sa::Float64,L::Float64,signal::Vector{Float64},notchesXCoordinates::Vector{Int64},apPeaksXCoordinates::Vector{Int64},apMinsXCoordinates::Vector{Int64})
-    strokeVolumes = fill(0.0, length(apMinsXCoordinates))
-
-    for i in 1:length(apMinsXCoordinates)
-        if (apMinsXCoordinates[i]+1000 < length(signal)) && (i+1 < length(notchesXCoordinates))&&(i+1 < length(apPeaksXCoordinates))
-            
-            if (notchesXCoordinates[i+1] - apMinsXCoordinates[i] > 100)&&(notchesXCoordinates[i+1] - apMinsXCoordinates[i] < 1000)
-                
-                P_dic_mean = sum(signal[apMinsXCoordinates[i]:notchesXCoordinates[i+1]])/length(apMinsXCoordinates[i]:notchesXCoordinates[i+1])
-                temp = P_dic_mean/signal[apPeaksXCoordinates[i+1]]
-                
-                strokeVolumes[i] = Sa * L * temp / 1000 #Результат будет в миллилитрах
-            end
-        end
-
-    end
-    
- return strokeVolumes
-
-end
 
 
 
@@ -391,5 +379,6 @@ end
 #907 мм2 площадь сечения аорты для девушки (34 мм диаметр), 120 мм ширина манжеты (подобрано)
 
 strokeVolumes = calculateStrokeVolume(907.0, 120.0, ap0, notchesXCoordinates_updt_end, ap_Peaks_x_updt_end, ap_Mins_x_updt_end)
-bar(strokeVolumes,fillColor=:blue)
+
+bar(strokeVolumes,fillcolor=:green,title="Ритмограмма значений ударного объема",xlabel="N сокращения",ylabel="Ударный объем, мл",legend=false)
 

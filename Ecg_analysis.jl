@@ -17,25 +17,6 @@ ecg = named_channels.LR ./ 1000
 fs=1000
 ecg_test=ecg[3:1000]
 ecg1=ecg[3:end]
-#=
-#Интегрирование с помощью скользящего окна
-N=150 #Ширина интегрирующего окна 150 
-S=0.0 # Вспомогательная переменная для подсчета значения в скобках на каждом шаге
-
-range4=collect(N+1:length(ecg_squared))
-range4_1= collect(1:N)
-ecg_integrated=fill(0.0,length(ecg_squared))
-for i in range4
-    for j in range4_1
-        S+=ecg_squared[i-(N-j)]
-    end
-ecg_integrated[i]= (1/N)*S
-S=0.0
-end
-
-=#
-
-
 
 
 #Задаем фильтры для ЭКГ
@@ -50,27 +31,6 @@ ecg_lowpassed=filt(df,ecg1)
 ecg_bandpassed=filt(dh,ecg_lowpassed)
 
 
-#=Вспомогательный сигнал с подавленной Т-волной
-rangeT1= collect(13:length(ecg1))
-ecg_vspom1=fill(0.0,length(ecg1))
-for i in rangeT1
-    ecg_vspom1[i]= 2*ecg_vspom1[i-1]-ecg_vspom1[i-2]+ecg1[i]-2*ecg1[i-6]+ecg1[i-12]
-end
-ecg_vspom1=ecg_vspom1[7:end]
-
-rangeT2 = collect(33:length(ecg_vspom1))
-ecg_vspom2=fill(0.0,length(ecg_vspom1))
-for i in rangeT2
-    ecg_vspom2[i]= 32*ecg_vspom1[i-16]-(ecg_vspom2[i-1]+ecg_vspom1[i]-ecg_vspom1[i-32])
-end
-ecg_vspom2 = ecg_vspom2[17:end]
-
-
-
-b = [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, -32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
-a = [1, -1]
-ecg_vspom3=filt(PolynomialRatio(b,a),ecg_vspom1)
-=#
 #Производная
 
 function Derivate(signal::Vector{Float64})
@@ -331,33 +291,33 @@ S_y_end[index+1]=ecg_bandpassed_end[i]
 index+=1
 end
 
-mRR,SDRR,MSD,rMSSD,pNN50=variabilityR_R(R_x_end)
-variabilityReachTime(R_x_end,Mins_x_updt)
+# mRR,SDRR,MSD,rMSSD,pNN50=variabilityR_R(R_x_end)
+# variabilityReachTime(R_x_end,Mins_x_updt)
 
 
 ################################################ Конец основной части, далее построение графиков и пр.
 
 
-plotly()
-plot([ecg1_end[1:10000],ecg_lowpassed_end[1:10000],ecg_bandpassed_end[1:10000],ecg_derivated_end[1:10000],ecg_squared_end[1:10000],ecg_integ_end[1:10000]],layout=(6,1),legend=false)
-plot([ecg1_end[1:10000],ecg_bandpassed_end[1:10000]],layout=(2,1),legend=false)
-plot(data,[y1[1:15001]],title="Зарегистрированный сигнал ФПГ",xlabel="Время, с",layout=(1,1),legend=false)
-plot([ecg_bandpassed_end[1:10000]],layout=(1,1),legend=false)
-scatter!(R_x_end[1:12],R_y_end[1:12])
-scatter!(Q_x_end[1:12],Q_y_end[1:12])
-scatter!(S_x_end[1:12],S_y_end[1:12])
+# plotly()
+# plot([ecg1_end[1:10000],ecg_lowpassed_end[1:10000],ecg_bandpassed_end[1:10000],ecg_derivated_end[1:10000],ecg_squared_end[1:10000],ecg_integ_end[1:10000]],layout=(6,1),legend=false)
+# plot([ecg1_end[1:10000],ecg_bandpassed_end[1:10000]],layout=(2,1),legend=false)
+# plot(data,[y1[1:15001]],title="Зарегистрированный сигнал ФПГ",xlabel="Время, с",layout=(1,1),legend=false)
+# plot([ecg_bandpassed_end],layout=(1,1),legend=false)
+# scatter!(R_x_end,R_y_end)
+# scatter!(Q_x_end,Q_y_end)
+# scatter!(S_x_end,S_y_end)
 
-E=(length(ecg_bandpassed_end)-1)/fs
-data=collect(0:1/fs:15)
+# E=(length(ecg_bandpassed_end)-1)/fs
+# data=collect(0:1/fs:15)
 
-Q_x=Q_x_end./fs
-R_x=R_x_end./fs
-S_x=S_x_end./fs
+# Q_x=Q_x_end./fs
+# R_x=R_x_end./fs
+# S_x=S_x_end./fs
 
-plot([ecg_bandpassed_end],layout=(1,1),legend=false)
-scatter!(Q_x[1:6],Q_y_end[1:6])
-scatter!(R_x_end,R_y_end)
-scatter!(S_x[1:6],S_y_end[1:6])
+# plot([ecg_bandpassed_end],layout=(1,1),legend=false)
+# scatter!(Q_x[1:6],Q_y_end[1:6])
+# scatter!(R_x_end,R_y_end)
+# scatter!(S_x[1:6],S_y_end[1:6])
 #=
 Peaks_ecg_y_filt=fill(0.0,length(Peaks_ecg_x))
 index=0
@@ -369,13 +329,14 @@ end
 variabilityReachTime(R_x_end,Mins_x_updt)
 @info S_x_Test
 =#
-R_x_Test=R_x_end.+2000 # Прибавляем координаты т.к убирали неинформативный участок и отнимаем задержку фильтра
-R_x_Test=R_x_Test.-14
-Q_x_Test=Q_x_end.+2000 # Прибавляем координаты т.к убирали неинформативный участок и отнимаем задержку фильтра
-Q_x_Test=Q_x_Test.-14
-S_x_Test=S_x_end.+2000 # Прибавляем координаты т.к убирали неинформативный участок и отнимаем задержку фильтра
-S_x_Test=S_x_Test.-14
+# TODO Обратить внимание!!!
+# R_x_Test=R_x_end.+2000 # Прибавляем координаты т.к убирали неинформативный участок и отнимаем задержку фильтра
+# R_x_Test=R_x_Test.-14
+# Q_x_Test=Q_x_end.+2000 # Прибавляем координаты т.к убирали неинформативный участок и отнимаем задержку фильтра
+# Q_x_Test=Q_x_Test.-14
+# S_x_Test=S_x_end.+2000 # Прибавляем координаты т.к убирали неинформативный участок и отнимаем задержку фильтра
+# S_x_Test=S_x_Test.-14
 
-ab=DataFrame(ECG=ecg_bandpassed_end[1:10000])
-CSV.write("ECG_signal3_short",ab)
+# ab=DataFrame(ECG=ecg_bandpassed_end[1:10000])
+# CSV.write("ECG_signal3_short",ab)
 

@@ -1,7 +1,7 @@
 
 #Принимает на вход сырой сигнал давления, сигнал давления после полосового фильтра, 
 #а также координаты минимумов и максимумов пульсовой волны давления на сигнале после полосового фильтра
-function detectDecroticNotch(signal_raw::Vector{Float64}, signal_bandpassed::Vector{Float64}, ap_peaksX::Vector{Int64}, ap_minsX::Vector{Int64})
+function detectApDecroticNotch(signal_raw::Vector{Float64}, signal_bandpassed::Vector{Float64}, ap_peaksX::Vector{Int64}, ap_minsX::Vector{Int64})
     notchesXCoordinates = fill(0, length(ap_peaksX))
     notchesYCoordinates = fill(0.0, length(ap_peaksX))
     temp = Derivate(signal_bandpassed)

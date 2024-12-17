@@ -1,6 +1,5 @@
 
 
-
 include("functions/functions.jl")
 filepath = raw"signals\Мельникова_Елизавета_Дмитриевна2_21-04-22_13-02-11_.hdr"
 num_ch, fs, ibeg, iend, timestart, names, lsbs, units, type = readhdr(filepath)
@@ -303,35 +302,35 @@ end
 
 
 
-plotly()
+#plotly()
 
-plot([ap0], title="Артериальное давление", ylabel="Давление, мм рт.ст.", xlabel="Время, с", layout=(1, 1), legend=false)
+#plot([ap0], title="Артериальное давление", ylabel="Давление, мм рт.ст.", xlabel="Время, с", layout=(1, 1), legend=false)
 
 
-plot(SSF)
+#plot(SSF)
 # data = collect(30:1/fs:50)
 # scatter!(t_SAD, t_SAD_y)
 # scatter!(Test_PPG, Test_PPG_y)
-scatter!(ap_Peaks_x_updt_end, ap_Peaks_y_updt_end)
-scatter!(ap_Mins_x_updt_end, ap_Mins_y_updt_end)
-scatter!(notchesXCoordinates, notchesYCoordinates)
-plot([y1], title="Сигнал с обозначением макс. и мин. ПВ давления", ylabel="Давление, мм рт.ст.", xlabel="Время, с", layout=(1, 1), legend=false)
-index77 = 0
-Test_PPG_y = fill(0.0, length(Test_PPG))
-for i in Test_PPG
-    Test_PPG_y[index77+1] = y1[i]
-    index77 += 1
-end
-index78 = 0
-t_SAD_y = fill(0.0, length(t_SAD))
-for i in t_SAD
-    t_SAD_y[index78+1] = y1[i]
-    index78 += 1
-end
-f = reduce(vcat, peaks_detected)
+#scatter!(ap_Peaks_x_updt_end, ap_Peaks_y_updt_end)
+#scatter!(ap_Mins_x_updt_end, ap_Mins_y_updt_end)
+#scatter!(notchesXCoordinates, notchesYCoordinates)
+#plot([y1], title="Сигнал с обозначением макс. и мин. ПВ давления", ylabel="Давление, мм рт.ст.", xlabel="Время, с", layout=(1, 1), legend=false)
 
-Mins = ap_Mins_x_updt_end ./ fs
-Peaks = ap_Peaks_x_updt_end ./ fs
+# index77 = 0
+# Test_PPG_y = fill(0.0, length(Test_PPG))
+# for i in Test_PPG
+#     Test_PPG_y[index77+1] = y1[i]
+#     index77 += 1
+# end
+# index78 = 0
+# t_SAD_y = fill(0.0, length(t_SAD))
+# for i in t_SAD
+#     t_SAD_y[index78+1] = y1[i]
+#     index78 += 1
+# end
+# f = reduce(vcat, peaks_detected)
+
+
 
 # TODO не брать пики идущие непосредственно до и после "плохих" участков сигнала!!!
 
@@ -343,42 +342,32 @@ Peaks = ap_Peaks_x_updt_end ./ fs
 # Sa = 2 - 3.5 см2 -> 300 мм2
 # L = 120 мм
 #Вызов функции для нахождения дикротических впадин
-notchesXCoordinates_updt_end,notchesYCoordinates_updt_end = detectDecroticNotch(ap0,ap_bandpassed, ap_Peaks_x_updt, ap_Mins_x_updt)
+#notchesXCoordinates_updt_end,notchesYCoordinates_updt_end = detectApDecroticNotch(ap0,ap_bandpassed, ap_Peaks_x_updt, ap_Mins_x_updt)
 
-temp = Derivate(ap_bandpassed)
+# plot([ap0],layout=(1,1),legend=false)
+# scatter!(ap_Peaks_x_updt_end, ap_Peaks_y_updt_end)
+# scatter!(ap_Mins_x_updt_end, ap_Mins_y_updt_end)
 
-plot([ap0],layout=(1,1),legend=false)
-scatter!(ap_Peaks_x_updt_end, ap_Peaks_y_updt_end)
-scatter!(ap_Mins_x_updt_end, ap_Mins_y_updt_end)
-
-scatter!(notchesXCoordinates_updt_end, notchesYCoordinates_updt_end)
-
-time = collect(80:1/fs:100)
-
-Peaks = ap_Peaks_x_updt_end ./ fs
-Mins = ap_Mins_x_updt_end ./ fs
-Notches=notchesXCoordinates_updt_end ./ fs
-
-plot([ap0],title="Артериальное давление", ylabel="Давление, мм рт.ст.", xlabel="Время, с",layout=(1,1),legend=false)
-scatter!(Peaks[55:78],ap_Peaks_y_updt_end[55:78])
-scatter!(Mins[55:78],ap_Mins_y_updt_end[55:78])
-scatter!(Notches[55:78],notchesYCoordinates_updt_end[55:78])
+# scatter!(notchesXCoordinates_updt_end, notchesYCoordinates_updt_end)
 
 
+# time = collect(80:1/fs:100)
 
+# Peaks = ap_Peaks_x_updt_end ./ fs
+# Mins = ap_Mins_x_updt_end ./ fs
+# Notches=notchesXCoordinates_updt_end ./ fs
 
-ap_Mins_x_updt_end
-ap_Peaks_x_updt_end
-notchesXCoordinates_updt_end
-
-
+# plot([ap0],title="Артериальное давление", ylabel="Давление, мм рт.ст.", xlabel="Время, с",layout=(1,1),legend=false)
+# scatter!(Peaks[55:78],ap_Peaks_y_updt_end[55:78])
+# scatter!(Mins[55:78],ap_Mins_y_updt_end[55:78])
+# scatter!(Notches[55:78],notchesYCoordinates_updt_end[55:78])
 
 
 
 
 #907 мм2 площадь сечения аорты для девушки (34 мм диаметр), 120 мм ширина манжеты (подобрано)
 
-strokeVolumes = calculateStrokeVolume(907.0, 120.0, ap0, notchesXCoordinates_updt_end, ap_Peaks_x_updt_end, ap_Mins_x_updt_end)
+# strokeVolumes = calculateStrokeVolume(907.0, 120.0, ap0, notchesXCoordinates_updt_end, ap_Peaks_x_updt_end, ap_Mins_x_updt_end)
 
-bar(strokeVolumes,fillcolor=:green,title="Ритмограмма значений ударного объема",xlabel="N сокращения",ylabel="Ударный объем, мл",legend=false)
+# bar(strokeVolumes,fillcolor=:green,title="Ритмограмма значений ударного объема",xlabel="N сокращения",ylabel="Ударный объем, мл",legend=false)
 

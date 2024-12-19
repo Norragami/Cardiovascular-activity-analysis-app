@@ -54,7 +54,7 @@ function exe(obj::SlideMeanFilter{T}, x::Number) where T
 end
 
 #Функция для конкретного фильтра скольpяшего среднего с окном 0.115 с
-function Slide_Mean(ecg::Vector{Float64}, window::Float64)
+function Slide_Mean(ecg::Vector{Float64}, window::Float64, fs::Int64)
     ECG = ecg   # Убираем 2 первых отсчета, ломающих график  (Тогда на вход можем подать только начальный сигнал)
     out = fill(0.0, size(ECG)) # Заполняем массив нулями, размера ECG
     wind= window*fs # Окно в отсчетах

@@ -1,6 +1,6 @@
 using HTTP
 using JSON
-include("custom_function.jl")
+include("Ecg_analysis.jl")
 # Define the server's host and port
 const HOST = "127.0.0.1"  # Localhost
 const PORT = 8080         # Port for the server
@@ -23,13 +23,13 @@ function request_handler(req::HTTP.Request)
         println("JSON response: ", json_response)  # Verify JSON content
         return HTTP.Response(200, json_response)
 
-    elseif method == "POST" && path == "/add"
+    elseif method == "POST" && path == "/getECG"
         # body = String(req.body)
         # println("Serving '/add' endpoint. Received body: ", body)
-        result = addAB(req)
+        result = formHttpResponse(req)
         # data = Dict("received_data" => body, "message" => "Data received successfully!")
-        data = Dict("result" => result)
-        return HTTP.Response(200, JSON.json(data))
+        
+        return HTTP.Response(200, result)
 
     else
         println("Serving 404 for path: ", path)

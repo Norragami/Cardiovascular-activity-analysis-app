@@ -1,7 +1,7 @@
 
+include("utility_functions/functions.jl")
 
 
-include("functions/functions.jl")
 filepath = raw"signals\Мельникова_Елизавета_Дмитриевна2_21-04-22_13-02-11_.hdr"
 num_ch, fs, ibeg, iend, timestart, names, lsbs, units, type = readhdr(filepath)
 named_channels, fs, timestart, units = readbin(filepath)

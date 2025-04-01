@@ -2,7 +2,7 @@ include("utility_functions/functions.jl")
 
 include("functions_for_main_processing/ECG_processing/exported_ECG_processing functions.jl")
 
-function formHttpResponse(req::HTTP.Request)
+function formHttpResponseECG(req::HTTP.Request)
 
     data = JSON.parse(String(req.body))
 
@@ -13,6 +13,7 @@ function formHttpResponse(req::HTTP.Request)
     return json_data
 end
 
+# TODO  Убрать неисапользованные переменные
 function getECGData(path::String, startPoint::Int64, endPoint::Int64)
     
     # filepath = raw"signals/Мельникова_Елизавета_Дмитриевна_21-04-22_11-43-20_.hdr"

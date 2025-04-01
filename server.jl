@@ -1,6 +1,7 @@
 using HTTP
 using JSON
 include("Ecg_analysis.jl")
+include("PPG_analysis.jl")
 # Define the server's host and port
 const HOST = "127.0.0.1"  # Localhost
 const PORT = 8080         # Port for the server
@@ -26,9 +27,13 @@ function request_handler(req::HTTP.Request)
     elseif method == "POST" && path == "/getECG"
         # body = String(req.body)
         # println("Serving '/add' endpoint. Received body: ", body)
-        result = formHttpResponse(req)
+        result = formHttpResponseECG(req)
         # data = Dict("received_data" => body, "message" => "Data received successfully!")
         
+        return HTTP.Response(200, result)
+
+    elseif method == "POST" && path == "/getPPG"
+        result = formHttpResponsePPG(req)
         return HTTP.Response(200, result)
 
     else

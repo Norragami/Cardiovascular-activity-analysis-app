@@ -44,7 +44,9 @@ end
 
 # Start the HTTP server
 println("Starting Julia HTTP server at http://$HOST:$PORT...")
-server_task = @async HTTP.serve(request_handler, HOST, PORT)
- sleep(5)
-schedule(server_task, InterruptException())  # Gracefully stop the server
+server_task = @async HTTP.serve(request_handler, HOST, PORT) # To stop server — kill terminal
+
+
+#  sleep(5)
+# schedule(server_task, InterruptException())  # Gracefully stop the server
 # println("Server stopped.")

@@ -2,6 +2,7 @@ using HTTP
 using JSON
 include("Ecg_analysis.jl")
 include("PPG_analysis.jl")
+include("AP_analysis.jl")
 # Define the server's host and port
 const HOST = "127.0.0.1"  # Localhost
 const PORT = 8080         # Port for the server
@@ -34,6 +35,10 @@ function request_handler(req::HTTP.Request)
 
     elseif method == "POST" && path == "/getPPG"
         result = formHttpResponsePPG(req)
+        return HTTP.Response(200, result)
+
+    elseif method == "POST" && path == "/getAP"
+        result = formHttpResponseAP(req)
         return HTTP.Response(200, result)
 
     else

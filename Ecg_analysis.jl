@@ -13,7 +13,7 @@ function formHttpResponseECG(req::HTTP.Request)
     return json_data
 end
 
-# TODO  Убрать неисапользованные переменные
+# TODO  Убрать неиспользованные переменные
 function getECGData(path::String, startPoint::Int64, endPoint::Int64)
     
     # filepath = raw"signals/Мельникова_Елизавета_Дмитриевна_21-04-22_11-43-20_.hdr"

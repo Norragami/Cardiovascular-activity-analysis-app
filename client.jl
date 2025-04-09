@@ -7,9 +7,10 @@ data = JSON.parse(String(response.body))
 
 
 
-dataToSend = Dict("path" => "Мельникова_Елизавета_Дмитриевна_21-04-22_11-43-20_", "startPoint" => 100000, "endPoint" => 1000000)
+dataToSend = Dict("path" => "Мельникова_Елизавета_Дмитриевна_21-04-22_11-43-20_", "startPoint" => 1, "endPoint" => 105868)
+# dataToSend = Dict("path" => "Мельникова_Елизавета_Дмитриевна_21-04-22_11-43-20_")
 json_data = JSON.json(dataToSend)
-response2 = HTTP.post("http://127.0.0.1:8080/getAP",headers = Dict("Content-Type" => "application/json"),body = json_data)
+response2 = HTTP.post("http://127.0.0.1:8080/getECG",headers = Dict("Content-Type" => "application/json"),body = json_data)
 ownedData = JSON.parse(String(response2.body))
 
 #Для тестирования работы запросов — нужное раскомментировать
@@ -37,8 +38,11 @@ outputAPMins_y = ownedData["outputAP_Mins_y"]
 
 Xcoordinate = range(100000,length=length(outputAP),step=1) # Для построения графика задать начальную точку
 
+output = ownedData["outputDecimatedECG"]
+output2 = ownedData["outputECG"]
+
 plotly()
-plot(Xcoordinate,outputAP,layout=(1,1),legend=false)
+plot([output,output2],layout=(2,1),legend=false)
 # scatter!(outputR_x, outputR_y)
 # scatter!(outputQ_x, outputQ_y)
 # scatter!(outputS_x, outputS_y)

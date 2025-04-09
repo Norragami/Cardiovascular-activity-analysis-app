@@ -21,7 +21,7 @@ return ppgFullFiltered end
 function formatPPGSignal(ppgFullFiltered::Vector{Float64})
     ppgFullFiltered=ppgFullFiltered[388:end] #Для выравнивания с сигналом ЭКГ потом также откинуть первые 2000 значений
     ppgFullFiltered=ppgFullFiltered[2000:end]
-    ppgFullFiltered=ppgFullFiltered.+500
+    ppgFullFiltered=ppgFullFiltered.+500 #Поднятие по амплитуде
     return ppgFullFiltered
 end
 

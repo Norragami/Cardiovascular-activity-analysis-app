@@ -41,6 +41,10 @@ function request_handler(req::HTTP.Request)
         result = formHttpResponseAP(req)
         return HTTP.Response(200, result)
 
+    elseif method == "POST" && path == "/getDecimatedECG"
+        result = formHttpResponseDecimatedECG(req)
+        return HTTP.Response(200, result)
+
     else
         println("Serving 404 for path: ", path)
         return HTTP.Response(404, "Not Found: Check your endpoint!")

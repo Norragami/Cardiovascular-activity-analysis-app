@@ -13,6 +13,50 @@ function formHttpResponseECG(req::HTTP.Request)
     return json_data
 end
 
+function formHttpResponseDecimatedECG(req::HTTP.Request)
+
+    data = JSON.parse(String(req.body))
+    
+    outputDecimatedECG =   getDecimatedECGData(data["path"])
+
+    dataToSend = Dict("outputDecimatedECG" => outputDecimatedECG)
+    json_data = JSON.json(dataToSend)
+    return json_data
+end
+
+function getDecimatedECGData(path::String)
+    filepath = "signals/"*path*".hdr"
+    num_ch, fs, ibeg, iend, timestart, names, lsbs, units, type = readhdr(filepath)
+    named_channels, fs, timestart, units = readbin(filepath)
+
+    #Для получения канала просто запрашиваем его через точку:
+    named_channels.LR
+    #все каналы
+    keys(named_channels)
+    ir = named_channels.Ir ./ 1000 # ИК сигнал
+    red = named_channels.Red ./ 1000# красный сигнал
+    ap = named_channels.FPrsNorm1 ./ 1000 # давление
+    ecg = named_channels.LR ./ 1000
+    fs=1000
+
+    ecg_original=ecg[3:end]
+
+
+    df,dh=designFilters(1000,25,1)
+    ecg_lowpassed=filt(df,ecg_original)
+    ecg_bandpassed=filt(dh,ecg_lowpassed)
+    ecg_bandpassed = ecg_bandpassed[2000:end]
+    outputDecimatedECG = []
+    for i in 1:10:length(ecg_bandpassed)
+        push!(outputDecimatedECG,ecg_bandpassed[i])
+    end
+
+    return outputDecimatedECG
+end
+
+
+
+
 # TODO  Убрать неиспользованные переменные
 function getECGData(path::String, startPoint::Int64, endPoint::Int64)
     

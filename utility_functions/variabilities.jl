@@ -1,4 +1,6 @@
 #Функции расчета вариабельности
+#Расстояние между пиками пульсовой волны
+#Можно поместить координаты R пиков и получить ритмограмму R-R интервалов
 function variabilityPeaks(Peaks_x_updt::Vector{Int64}) 
     P_P= fill(0.0, length(Peaks_x_updt))
     ind = 1
@@ -21,7 +23,8 @@ function variabilityPeaks(Peaks_x_updt::Vector{Int64})
         n+=1
     end
     P_P=P_P./fs
-    bar(P_P,fillcolor=:blue,title="Ритмограмма интервалов между пиками ПВ",xlabel="N интервала",ylabel="Интервал между пиками, с",legend=false)
+    # bar(P_P,fillcolor=:blue,title="Ритмограмма интервалов между пиками ПВ",xlabel="N интервала",ylabel="Интервал между пиками, с",legend=false)
+    return P_P
 end
     
 function variabilityReachTime(R_x_end::Vector{Int64},Mins_x_updt::Vector{Int64}) 
@@ -45,9 +48,11 @@ function variabilityReachTime(R_x_end::Vector{Int64},Mins_x_updt::Vector{Int64})
       
     end
 
-    bar(ReachTime,fillcolor=:blue,title="Ритмограмма времени распространения ПВ",xlabel="N интервала",ylabel="Время распространения, мс",legend=false)
+    # bar(ReachTime,fillcolor=:blue,title="Ритмограмма времени распространения ПВ",xlabel="N интервала",ylabel="Время распространения, мс",legend=false)
+    return ReachTime
 end
 
+# Расчет статистик по R-R интервалам
 function variabilityR_R(R_x_end::Vector{Int64}) 
     R_R= fill(0.0, length(R_x_end)-1)
     ind = 1
@@ -89,6 +94,7 @@ function variabilityR_R(R_x_end::Vector{Int64})
     return mRR,SDRR,MSD,rMSSD,pNN50
 end
 
+# Показатели вариабельности по сигналу давления
 function variabilityAP(ap_Peaks_x_updt_end::Vector{Int64},ap_Mins_x_updt_end::Vector{Int64},ap_Peaks_y_updt_end::Vector{Float64},ap_Mins_y_updt_end::Vector{Float64}) 
     SAP = fill(0.0,length(ap_Mins_x_updt_end))
     DAP = fill(0.0,length(ap_Mins_x_updt_end))

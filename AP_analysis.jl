@@ -7,9 +7,9 @@ function formHttpResponseAP(req::HTTP.Request)
 
     data = JSON.parse(String(req.body))
 
-    outputAP, outputAP_Peaks_x, outputAP_Peaks_y, outputAP_Mins_x, outputAP_Mins_y =   getAPData(data["path"], data["startPoint"], data["endPoint"])
+    outputAP, outputAP_X, outputAP_Peaks_x, outputAP_Peaks_y, outputAP_Mins_x, outputAP_Mins_y =   getAPData(data["path"], data["startPoint"], data["endPoint"])
 
-    dataToSend = Dict("outputAP" => outputAP, "outputAP_Peaks_x" => outputAP_Peaks_x, "outputAP_Peaks_y" => outputAP_Peaks_y, "outputAP_Mins_x" => outputAP_Mins_x, "outputAP_Mins_y" => outputAP_Mins_y)
+    dataToSend = Dict("outputAP" => outputAP, "outputAP_X" => outputAP_X, "outputAP_Peaks_x" => outputAP_Peaks_x, "outputAP_Peaks_y" => outputAP_Peaks_y, "outputAP_Mins_x" => outputAP_Mins_x, "outputAP_Mins_y" => outputAP_Mins_y)
     json_data = JSON.json(dataToSend)
     return json_data
 end
@@ -56,8 +56,16 @@ function getAPData(path::String, startPoint::Int64, endPoint::Int64)
     ap_Peaks_x_end = ap_Peaks_x_updt .+ 12449 # ВАЖНО! Переводим координаты пиков в координаты исходного сигнала
 
 
+    # Форматируем AP сигнал 
+
+    ap0 = ap0[2000:end]
+    ap_Peaks_x_end = ap_Peaks_x_end .- 2000
+
     apPeaks_x, apPeaks_y, apMins_x, apMins_y = apPeaksCorrection(ap_Peaks_x_end, ap0)
     
+ 
+
+
 
     #Формируем данные по необходимому участку для отправки
 
@@ -78,7 +86,10 @@ function getAPData(path::String, startPoint::Int64, endPoint::Int64)
         end
     end
 
-    return outputAP, outputAP_Peaks_x, outputAP_Peaks_y, outputAP_Mins_x, outputAP_Mins_y
+    Xcoordinate = range(startPoint,length=length(outputAP),step=1) # Для построения графика задать начальную точку
+
+
+    return outputAP, Xcoordinate, outputAP_Peaks_x, outputAP_Peaks_y, outputAP_Mins_x, outputAP_Mins_y
 
 end
 # SAP,DAP,PulseAP,MeanAP=variabilityAP(ap_Peaks_x_updt_end,ap_Mins_x_updt_end,ap_Peaks_y_updt_end,ap_Mins_y_updt_end)

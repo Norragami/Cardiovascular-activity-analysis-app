@@ -7,10 +7,10 @@ data = JSON.parse(String(response.body))
 
 
 
-dataToSend = Dict("path" => "Мельникова_Елизавета_Дмитриевна_21-04-22_11-43-20_", "startPoint" => 1, "endPoint" => 105868)
+dataToSend = Dict("path" => "Мельникова_Елизавета_Дмитриевна_21-04-22_11-43-20_", "startPoint" => 1, "endPoint" => 20000)
 # dataToSend = Dict("path" => "Мельникова_Елизавета_Дмитриевна_21-04-22_11-43-20_")
 json_data = JSON.json(dataToSend)
-response2 = HTTP.post("http://127.0.0.1:8080/getECG",headers = Dict("Content-Type" => "application/json"),body = json_data)
+response2 = HTTP.post("http://127.0.0.1:8080/getPPG",headers = Dict("Content-Type" => "application/json"),body = json_data)
 ownedData = JSON.parse(String(response2.body))
 
 #Для тестирования работы запросов — нужное раскомментировать
@@ -23,18 +23,18 @@ ownedData = JSON.parse(String(response2.body))
 # outputR_y = ownedData["outputR_y"]
 # outputS_y = ownedData["outputS_y"]
 
-# outputPPG = ownedData["outputPPG"]
-# outputPPGPeaks_x = ownedData["outputPPGPeaks_x"]
-# outputPPGPeaks_y = ownedData["outputPPGPeaks_y"]
-# outputPPGMins_x = ownedData["outputPPGMins_x"]
-# outputPPGMins_y = ownedData["outputPPGMins_y"]
+outputPPG = ownedData["outputPPG"]
+outputPPGPeaks_x = ownedData["outputPPGPeaks_x"]
+outputPPGPeaks_y = ownedData["outputPPGPeaks_y"]
+outputPPGMins_x = ownedData["outputPPGMins_x"]
+outputPPGMins_y = ownedData["outputPPGMins_y"]
 
 
-outputAP = ownedData["outputAP"]
-outputAPPeaks_x = ownedData["outputAP_Peaks_x"]
-outputAPPeaks_y = ownedData["outputAP_Peaks_y"]
-outputAPMins_x = ownedData["outputAP_Mins_x"]
-outputAPMins_y = ownedData["outputAP_Mins_y"]
+# outputAP = ownedData["outputAP"]
+# outputAPPeaks_x = ownedData["outputAP_Peaks_x"]
+# outputAPPeaks_y = ownedData["outputAP_Peaks_y"]
+# outputAPMins_x = ownedData["outputAP_Mins_x"]
+# outputAPMins_y = ownedData["outputAP_Mins_y"]
 
 Xcoordinate = range(100000,length=length(outputAP),step=1) # Для построения графика задать начальную точку
 

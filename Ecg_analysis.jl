@@ -6,9 +6,9 @@ function formHttpResponseECG(req::HTTP.Request)
 
     data = JSON.parse(String(req.body))
 
-    outputECG, outputQ_x, outputR_x, outputS_x, outputQ_y, outputR_y, outputS_y =   getECGData(data["path"], data["startPoint"], data["endPoint"])
+    outputECG, outputECG_X, outputQ_x, outputR_x, outputS_x, outputQ_y, outputR_y, outputS_y =   getECGData(data["path"], data["startPoint"], data["endPoint"])
 
-    dataToSend = Dict("outputECG" => outputECG, "outputQ_x" => outputQ_x, "outputR_x" => outputR_x, "outputS_x" => outputS_x, "outputQ_y" => outputQ_y, "outputR_y" => outputR_y, "outputS_y" => outputS_y)
+    dataToSend = Dict("outputECG" => outputECG, "outputECG_X" => outputECG_X, "outputQ_x" => outputQ_x, "outputR_x" => outputR_x, "outputS_x" => outputS_x, "outputQ_y" => outputQ_y, "outputR_y" => outputR_y, "outputS_y" => outputS_y)
     json_data = JSON.json(dataToSend)
     return json_data
 end
@@ -17,14 +17,14 @@ function formHttpResponseDecimatedECG(req::HTTP.Request)
 
     data = JSON.parse(String(req.body))
     
-    outputDecimatedECG =   getDecimatedECGData(data["path"])
+    outputDecimatedECG =   getDecimatedECGData(data["path"],10)
 
     dataToSend = Dict("outputDecimatedECG" => outputDecimatedECG)
     json_data = JSON.json(dataToSend)
     return json_data
 end
 
-function getDecimatedECGData(path::String)
+function getDecimatedECGData(path::String, decimation::Int64)
     filepath = "signals/"*path*".hdr"
     num_ch, fs, ibeg, iend, timestart, names, lsbs, units, type = readhdr(filepath)
     named_channels, fs, timestart, units = readbin(filepath)
@@ -47,7 +47,7 @@ function getDecimatedECGData(path::String)
     ecg_bandpassed=filt(dh,ecg_lowpassed)
     ecg_bandpassed = ecg_bandpassed[2000:end]
     outputDecimatedECG = []
-    for i in 1:10:length(ecg_bandpassed)
+    for i in 1:decimation:length(ecg_bandpassed)
         push!(outputDecimatedECG,ecg_bandpassed[i])
     end
 
@@ -129,9 +129,9 @@ function getECGData(path::String, startPoint::Int64, endPoint::Int64)
 
     outputQ_y, outputR_y, outputS_y = findAmplitudeQRS(outputQ_x, outputR_x, outputS_x, ecg_bandpassed_end)
     
+    Xcoordinate = range(startPoint,length=length(outputECG),step=1)
 
-
-    return outputECG, outputQ_x, outputR_x, outputS_x, outputQ_y, outputR_y, outputS_y
+    return outputECG, Xcoordinate, outputQ_x, outputR_x, outputS_x, outputQ_y, outputR_y, outputS_y
 
 end
 

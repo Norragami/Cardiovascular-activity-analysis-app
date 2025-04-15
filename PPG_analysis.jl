@@ -9,9 +9,9 @@ function formHttpResponsePPG(req::HTTP.Request)
 
     data = JSON.parse(String(req.body))
     
-    outputPPG, outputPPGPeaks_x, outputPPGPeaks_y, outputPPGMins_x, outputPPGMins_y =   getPPGData(data["path"], data["startPoint"], data["endPoint"])
+    outputPPG, outputPPG_X, outputPPGPeaks_x, outputPPGPeaks_y, outputPPGMins_x, outputPPGMins_y =   getPPGData(data["path"], data["startPoint"], data["endPoint"])
 
-    dataToSend = Dict("outputPPG" => outputPPG, "outputPPGPeaks_x" => outputPPGPeaks_x, "outputPPGPeaks_y" => outputPPGPeaks_y, "outputPPGMins_x" => outputPPGMins_x, "outputPPGMins_y" => outputPPGMins_y)
+    dataToSend = Dict("outputPPG" => outputPPG, "outputPPG_X" => outputPPG_X, "outputPPGPeaks_x" => outputPPGPeaks_x, "outputPPGPeaks_y" => outputPPGPeaks_y, "outputPPGMins_x" => outputPPGMins_x, "outputPPGMins_y" => outputPPGMins_y)
 
     json_data = JSON.json(dataToSend)
     return json_data
@@ -68,9 +68,9 @@ function getPPGData(path::String, startPoint::Int64, endPoint::Int64)
         end
     end
 
+    Xcoordinate = range(startPoint,length=length(outputPPG),step=1)
 
-
-    return outputPPG, outputPPGPeaks_x, outputPPGPeaks_y, outputPPGMins_x, outputPPGMins_y
+    return outputPPG, Xcoordinate, outputPPGPeaks_x, outputPPGPeaks_y, outputPPGMins_x, outputPPGMins_y
 
 end
 

@@ -17,9 +17,9 @@ function formHttpResponseDecimatedECG(req::HTTP.Request)
 
     data = JSON.parse(String(req.body))
     
-    outputDecimatedECG =   getDecimatedECGData(data["path"],10)
+    outputDecimatedECG, outputDecimatedECG_X =   getDecimatedECGData(data["path"],50)
 
-    dataToSend = Dict("outputDecimatedECG" => outputDecimatedECG)
+    dataToSend = Dict("outputDecimatedECG" => outputDecimatedECG, "outputDecimatedECG_X" => outputDecimatedECG_X)
     json_data = JSON.json(dataToSend)
     return json_data
 end
@@ -51,7 +51,10 @@ function getDecimatedECGData(path::String, decimation::Int64)
         push!(outputDecimatedECG,ecg_bandpassed[i])
     end
 
-    return outputDecimatedECG
+    Xcoordinate = range(1,length=length(outputDecimatedECG),step=1)
+
+
+    return outputDecimatedECG, Xcoordinate
 end
 
 
@@ -75,8 +78,10 @@ function getECGData(path::String, startPoint::Int64, endPoint::Int64)
     ecg = named_channels.LR ./ 1000
     fs=1000
 
-
     ecg_original=ecg[3:end]
+
+
+
 
 
     df,dh=designFilters(1000,25,1)
@@ -109,6 +114,18 @@ function getECGData(path::String, startPoint::Int64, endPoint::Int64)
     # Q_y_end,R_y_end,S_y_end=findAmplitudeQRS(Q_x_end,R_x_end,S_x_end,ecg_bandpassed_end)
 
 
+        
+    #Проверка на выход за пределы сигнала
+    if endPoint > length(ecg_bandpassed_end)
+        endPoint = length(ecg_bandpassed_end)
+    end
+
+    if startPoint < 1
+        startPoint = 1
+    end
+
+
+
     #Формируем данные по необходимому участку для отправки
 
     outputECG = ecg_bandpassed_end[startPoint:endPoint]
@@ -135,7 +152,7 @@ function getECGData(path::String, startPoint::Int64, endPoint::Int64)
 
 end
 
-# TODO !!!!! НЕ ЗАБЫВАТЬ ЗАСИНХРОНИТЬ ВСЕ СТГНАЛЫ ПО ВРЕМЕНИ ОБРАТНО
+# TODO !!!!! НЕ ЗАБЫВАТЬ ЗАСИНХРОНИТЬ ВСЕ СИГНАЛЫ ПО ВРЕМЕНИ ОБРАТНО
 
 
 

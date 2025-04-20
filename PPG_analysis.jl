@@ -39,6 +39,8 @@ function getPPGData(path::String, startPoint::Int64, endPoint::Int64)
     #Реализуем фильтрацию ФПГ
     originSignal= ir[3:end]
 
+       
+
     originalLowpassed = lowpassPPG(originSignal)
 
     ppgFullFiltered = highpassPPG(originalLowpassed)
@@ -48,6 +50,16 @@ function getPPGData(path::String, startPoint::Int64, endPoint::Int64)
     ssfSignal = convertToSSF(ppgFormatted,64)
 
     Peaks_x, Peaks_y, Mins_x, Mins_y = detectPpgPeaks(ssfSignal,ppgFormatted)
+
+    #Проверка на выход за пределы сигнала
+    if endPoint > length(ppgFormatted)
+        endPoint = length(ppgFormatted)
+    end
+
+    if startPoint < 1
+        startPoint = 1
+    end
+
 
 
     #Формируем данные по необходимому участку для отправки

@@ -34,6 +34,9 @@ function getAPData(path::String, startPoint::Int64, endPoint::Int64)
     fs = 1000
 
     ap0 = ap[3:end]
+
+    
+
     rawAPSignal = ap[12450:end] #Убираем первичную накачку манжеты. Может быть другое значение!!!
 
 
@@ -64,7 +67,14 @@ function getAPData(path::String, startPoint::Int64, endPoint::Int64)
     apPeaks_x, apPeaks_y, apMins_x, apMins_y = apPeaksCorrection(ap_Peaks_x_end, ap0)
     
  
-
+    #Проверка на выход за пределы сигнала
+    if endPoint > length(ap0)
+        endPoint = length(ap0)
+    end
+    
+    if startPoint < 1
+        startPoint = 1
+    end
 
 
     #Формируем данные по необходимому участку для отправки

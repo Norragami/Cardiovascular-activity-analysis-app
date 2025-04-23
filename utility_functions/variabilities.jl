@@ -3,6 +3,7 @@
 #Можно поместить координаты R пиков и получить ритмограмму R-R интервалов
 function variabilityPeaks(Peaks_x_updt::Vector{Int64}) 
     P_P= fill(0.0, length(Peaks_x_updt))
+    fs=1000
     ind = 1
     n=2
     for i in collect(1:length(Peaks_x_updt))
@@ -29,19 +30,21 @@ end
     
 function variabilityReachTime(R_x_end::Vector{Int64},Mins_x_updt::Vector{Int64}) 
     ReachTime= fill(0,length(R_x_end))
+    Intervals_X= fill(0,length(R_x_end))
     i=1
     n=1
    for p in collect(1:length(R_x_end)-1)
         if i>length(R_x_end) || n > length(R_x_end)
             break
         end
-       if (R_x_end[i]-Mins_x_updt[n]) > 600 #Пропущен R
+       if (R_x_end[i]-Mins_x_updt[n]) > 400 #Пропущен R
             n+=1
        end 
-       if (R_x_end[i]-Mins_x_updt[n]) < -600  #Пропущен min ПВ
+       if (R_x_end[i]-Mins_x_updt[n]) < -400  #Пропущен min ПВ
         i+=1  
        end
        ReachTime[p]=abs(R_x_end[i]-Mins_x_updt[n])
+       Intervals_X[p]=R_x_end[i]
        
       i+=1
       n+=1
@@ -49,7 +52,7 @@ function variabilityReachTime(R_x_end::Vector{Int64},Mins_x_updt::Vector{Int64})
     end
 
     # bar(ReachTime,fillcolor=:blue,title="Ритмограмма времени распространения ПВ",xlabel="N интервала",ylabel="Время распространения, мс",legend=false)
-    return ReachTime
+    return ReachTime, Intervals_X
 end
 
 # Расчет статистик по R-R интервалам

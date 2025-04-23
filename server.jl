@@ -3,6 +3,7 @@ using JSON
 include("Ecg_analysis.jl")
 include("PPG_analysis.jl")
 include("AP_analysis.jl")
+include("statistics_handler.jl")
 # Define the server's host and port
 const HOST = "127.0.0.1"  # Localhost
 const PORT = 8080         # Port for the server
@@ -43,6 +44,13 @@ function request_handler(req::HTTP.Request)
 
     elseif method == "POST" && path == "/getDecimatedECG"
         result = formHttpResponseDecimatedECG(req)
+        return HTTP.Response(200, result)
+
+    elseif method == "POST" && path == "/getRrIntervals"
+        result = formHttpResponseRrIntervals(req)
+        return HTTP.Response(200, result)
+    elseif method == "POST" && path == "/getPulseWaveReachTime"
+        result = formHttpResponsePulseWaveReachTime(req)
         return HTTP.Response(200, result)
 
     else

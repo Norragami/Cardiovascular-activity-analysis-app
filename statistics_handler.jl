@@ -2,6 +2,7 @@ include("utility_functions/functions.jl")
 include("functions_for_main_processing/ECG_processing/exported_ECG_processing functions.jl")
 include("functions_for_main_processing/PPG_processing/exported_PPG_processing functions.jl")
 
+
 function formHttpResponseRrIntervals(req::HTTP.Request)
 
     data = JSON.parse(String(req.body))
@@ -113,4 +114,79 @@ function getPulseWaveReachTime(path::String)
     # Xcoordinate = range(1,length=length(PulseWaveReachTime),step=1)
 
     return PulseWaveReachTime, Intervals_X
+end
+
+
+
+function formHttpResponseHeartVolume(req::HTTP.Request)
+
+    data = JSON.parse(String(req.body))
+
+    HeartVolume, HeartVolumePeaksCoordinates = getHeartVolume(data["path"])
+
+    dataToSend = Dict("HeartVolume" => HeartVolume, "HeartVolumePeaksCoordinates" => HeartVolumePeaksCoordinates)
+    json_data = JSON.json(dataToSend)
+    return json_data
+    
+end
+
+
+
+
+function getHeartVolume(path)
+    filepath = "signals/"*path*".hdr"
+    num_ch, fs, ibeg, iend, timestart, names, lsbs, units, type = readhdr(filepath)
+    named_channels, fs, timestart, units = readbin(filepath)
+
+    #Для получения канала просто запрашиваем его через точку:
+    named_channels.LR
+    #все каналы
+    keys(named_channels)
+    ir = named_channels.Ir ./ 1000 # ИК сигнал
+    red = named_channels.Red ./ 1000# красный сигнал
+    ap = named_channels.FPrsNorm1  # давление не делим на 1000 чтоб получить привычные значения
+    ecg = named_channels.LR ./ 1000
+    fs = 1000
+
+    ap0 = ap[3:end]
+
+    
+
+    rawAPSignal = ap[12450:end] #Убираем первичную накачку манжеты. Может быть другое значение!!!
+
+
+    ap_lowpassed = lowpassAP(rawAPSignal)
+
+
+
+    ap_bandpassed = highpassAP(ap_lowpassed)
+
+
+
+    apFormatted = formatAP(ap_bandpassed)
+
+
+    ssfSignal = converToSSF(apFormatted,64)
+
+
+    ap_Peaks_x_updt,ap_Mins_x_updt = findPeaks(ssfSignal,ap_bandpassed)
+
+    notchesXCoordinates= detectApDecroticNotch(ap0, ap_bandpassed, ap_Peaks_x_updt, ap_Mins_x_updt)
+
+    ap_Peaks_x_end = ap_Peaks_x_updt .+ 12449 # ВАЖНО! Переводим координаты пиков в координаты исходного сигнала
+    # notchesXCoordinates = notchesXCoordinates .+ 12449 Делается внутри функции detectApDecroticNotch!!!!
+
+    # Форматируем AP сигнал 
+
+    ap0 = ap0[2000:end]
+    ap_Peaks_x_end = ap_Peaks_x_end .- 2000
+    notchesXCoordinates = notchesXCoordinates .- 2000
+
+    apPeaks_x, apPeaks_y, apMins_x, apMins_y = apPeaksCorrection(ap_Peaks_x_end, ap0)
+
+    # TODO Передавать значения: 907 мм2 площадь сечения аорты для девушки (34 мм диаметр), 120 мм ширина манжеты (подобрано)
+    strokeVolumes, HeartVolumePeaksCoordinates = calculateStrokeVolume(907.0, 120.0, ap0, notchesXCoordinates, apPeaks_x, apMins_x)
+
+    return strokeVolumes, HeartVolumePeaksCoordinates
+
 end

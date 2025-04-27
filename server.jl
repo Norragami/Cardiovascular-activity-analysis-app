@@ -49,8 +49,13 @@ function request_handler(req::HTTP.Request)
     elseif method == "POST" && path == "/getRrIntervals"
         result = formHttpResponseRrIntervals(req)
         return HTTP.Response(200, result)
+
     elseif method == "POST" && path == "/getPulseWaveReachTime"
         result = formHttpResponsePulseWaveReachTime(req)
+        return HTTP.Response(200, result)
+
+    elseif method == "POST" && path == "/getHeartVolume"
+        result = formHttpResponseHeartVolume(req)
         return HTTP.Response(200, result)
 
     else

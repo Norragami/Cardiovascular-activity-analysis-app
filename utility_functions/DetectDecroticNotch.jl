@@ -41,7 +41,7 @@ function detectApDecroticNotch(signal_raw::Vector{Float64}, signal_bandpassed::V
     notchesYCoordinates_updt_end = fill(0.0, length(notchesXCoordinates))
     notchesXCoordinates_updt_end = fill(0, length(notchesXCoordinates))
 
-    notchesXCoordinates_updt_end_raw = notchesXCoordinates_updt .+ 12449
+    notchesXCoordinates_updt_end_raw = notchesXCoordinates_updt .+ 12449  #TODO Прибавляем участок который исключали из сигнала ap0
     for m in eachindex(notchesXCoordinates_updt_end_raw)
         Min = minimum(signal_raw[notchesXCoordinates_updt_end_raw[m]-100:notchesXCoordinates_updt_end_raw[m]])
         range = collect(notchesXCoordinates_updt_end_raw[m]-100:notchesXCoordinates_updt_end_raw[m])
@@ -54,5 +54,5 @@ function detectApDecroticNotch(signal_raw::Vector{Float64}, signal_bandpassed::V
 
     end
 
-    return notchesXCoordinates_updt_end, notchesYCoordinates_updt_end
+    return notchesXCoordinates_updt_end # notchesYCoordinates_updt_end
 end

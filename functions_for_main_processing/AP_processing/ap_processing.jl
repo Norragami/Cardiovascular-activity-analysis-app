@@ -196,7 +196,7 @@ function findPeaks(SSF::Vector{Float64},ap_bandpassed::Vector{Float64})
         index += 1
     end
     # Mins_x_updt и Mins_y_updt координаты и значения минимумов соответственно
-    return ap_Peaks_x_updt
+    return ap_Peaks_x_updt,ap_Mins_x_updt
 end
 
 

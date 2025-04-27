@@ -54,7 +54,7 @@ function getAPData(path::String, startPoint::Int64, endPoint::Int64)
     ssfSignal = converToSSF(apFormatted,64)
 
 
-    ap_Peaks_x_updt = findPeaks(ssfSignal,ap_bandpassed)
+    ap_Peaks_x_updt, ap_Mins_x_updt = findPeaks(ssfSignal,ap_bandpassed)
 
     ap_Peaks_x_end = ap_Peaks_x_updt .+ 12449 # ВАЖНО! Переводим координаты пиков в координаты исходного сигнала
 

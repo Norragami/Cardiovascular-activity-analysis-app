@@ -9,7 +9,7 @@ function calculateStrokeVolume(Sa::Float64,L::Float64,signal::Vector{Float64},no
                 P_dic_mean = sum(signal[apMinsXCoordinates[i]:notchesXCoordinates[i+1]])/length(apMinsXCoordinates[i]:notchesXCoordinates[i+1])
                 temp = P_dic_mean/signal[apPeaksXCoordinates[i+1]]
                 
-                strokeVolumes[i] = Sa * L * temp / 1000 #Результат будет в миллилитрах
+                strokeVolumes[i] = Sa * L * temp /1000  #Результат будет в миллилитрах
                 strokeVolumesAPcoordinates[i] = apPeaksXCoordinates[i]
             # end
         end

@@ -2,7 +2,7 @@
 #Расстояние между пиками пульсовой волны
 #Можно поместить координаты R пиков и получить ритмограмму R-R интервалов
 function variabilityPeaks(Peaks_x_updt::Vector{Int64}) 
-    P_P= fill(0.0, length(Peaks_x_updt))
+    P_P= fill(0, length(Peaks_x_updt))
     fs=1000
     ind = 1
     n=2
@@ -16,7 +16,7 @@ function variabilityPeaks(Peaks_x_updt::Vector{Int64})
             break
         end
     end
-    M=mean(P_P)
+    
     while n < length(P_P)
         if P_P[n]/P_P[n-1] > 10
             P_P[n]=P_P[n-1]
@@ -56,7 +56,8 @@ function variabilityReachTime(R_x_end::Vector{Int64},Mins_x_updt::Vector{Int64})
 end
 
 # Расчет статистик по R-R интервалам
-function variabilityR_R(R_x_end::Vector{Int64}) 
+function variabilityR_R(R_x_end::Vector{Float64}) 
+    fs = 1000
     R_R= fill(0.0, length(R_x_end)-1)
     ind = 1
     for i in collect(1:length(R_x_end))
@@ -68,8 +69,8 @@ function variabilityR_R(R_x_end::Vector{Int64})
              break
         end
     end
-    R_R=R_R./fs
-    mRR=mean(R_R) *1000 #Сразу перейдем к миллисекундам
+    
+    mRR=(sum(R_R)/length(R_R)) *1000 #Сразу перейдем к миллисекундам
     SDRR=std(R_R) * 1000
     R=collect(1:length(R_R))
     S=0

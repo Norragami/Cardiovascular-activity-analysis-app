@@ -7,9 +7,9 @@ function formHttpResponseRrIntervals(req::HTTP.Request)
 
     data = JSON.parse(String(req.body))
 
-    RrIntervals, RrIntervalsX = getRrIntervals(data["path"])
+    RrIntervals, RrIntervalsX,mRR, SDRR, MSD, rMSSD, pNN50  = getRrIntervals(data["path"])
 
-    dataToSend = Dict("RrIntervals" => RrIntervals, "RrIntervalsX" => RrIntervalsX)
+    dataToSend = Dict("RrIntervals" => RrIntervals, "RrIntervalsX" => RrIntervalsX,"mRR"=>mRR, "SDRR"=>SDRR, "MSD"=>MSD, "rMSSD"=>rMSSD, "pNN50"=>pNN50)
     json_data = JSON.json(dataToSend)
     return json_data
 end
@@ -61,8 +61,10 @@ function getRrIntervals(path::String)
 
   R_R = variabilityPeaks(R_x_end)
   Xcoordinate = range(1,length=length(R_R),step=1)
+  
+  mRR,SDRR,MSD,rMSSD,pNN50 = variabilityR_R(R_R)
 
- return R_R, Xcoordinate
+ return R_R, Xcoordinate,mRR,SDRR,MSD,rMSSD,pNN50
 end
 
 
@@ -184,8 +186,8 @@ function getHeartVolume(path)
 
     apPeaks_x, apPeaks_y, apMins_x, apMins_y = apPeaksCorrection(ap_Peaks_x_end, ap0)
 
-    # TODO Передавать значения: 907 мм2 площадь сечения аорты для девушки (34 мм диаметр), 120 мм ширина манжеты (подобрано)
-    strokeVolumes, HeartVolumePeaksCoordinates = calculateStrokeVolume(907.0, 120.0, ap0, notchesXCoordinates, apPeaks_x, apMins_x)
+    # TODO Передавать значения: 907.92 площадь сечения аорты для девушки (34 мм диаметр), 12 см ширина манжеты (подобрано)
+    strokeVolumes, HeartVolumePeaksCoordinates = calculateStrokeVolume(907.92, 120.0, ap0, notchesXCoordinates, apPeaks_x, apMins_x)
 
     return strokeVolumes, HeartVolumePeaksCoordinates
 

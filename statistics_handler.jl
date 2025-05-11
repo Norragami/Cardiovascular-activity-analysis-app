@@ -111,7 +111,35 @@ function getPulseWaveReachTime(path::String)
 
     Peaks_x, Peaks_y, Mins_x, Mins_y = detectPpgPeaks(ssfSignal,ppgFormatted)
 
-    PulseWaveReachTime, Intervals_X = variabilityReachTime(Peaks_x,Mins_x)
+    ecg_original=ecg[3:end]
+
+
+
+   df,dh=designFilters(1000,25,1)
+   ecg_lowpassed=filt(df,ecg_original)
+   ecg_bandpassed=filt(dh,ecg_lowpassed)
+
+
+   #Производная
+
+   ecg_derivated=Derivate(ecg_bandpassed)
+
+   #Возведение в квадрат
+   ecg_squared = ecg_derivated.^2
+   #Скользящее среднее
+   ecg_integ=Slide_Mean(ecg_squared,0.150,1000)
+
+   ecg_original_end, ecg_lowpassed_end, ecg_bandpassed_end, ecg_derivated_end, ecg_squared_end, ecg_integ_end = formatECG(ecg_original,ecg_lowpassed,ecg_bandpassed,ecg_derivated,ecg_squared,ecg_integ)
+
+
+   Peaks_ecg_x,Peaks_ecg_y = findRPeaks(ecg_integ_end)
+
+   Q_raw_x_end,Q_raw_y_end,R_raw_x_end,R_raw_y_end = FindQ_R_raw(ecg_integ_end,Peaks_ecg_x)
+
+   #Применяем функцию для нахождения положений Q и R на отфильтрованном сигнале
+   _,R_x_end,_=AccurateQ_R_S(ecg_bandpassed_end,Q_raw_x_end,R_raw_x_end)
+
+    PulseWaveReachTime, Intervals_X = variabilityReachTime(R_x_end,Mins_x)
 
     # Xcoordinate = range(1,length=length(PulseWaveReachTime),step=1)
 

@@ -57,22 +57,22 @@ end
 
 # Расчет статистик по R-R интервалам
 function variabilityR_R(R_x_end::Vector{Float64}) 
-    fs = 1000
-    R_R= fill(0.0, length(R_x_end)-1)
-    ind = 1
-    for i in collect(1:length(R_x_end))
-        if i < length(R_x_end)
-             R_R[ind]= abs(R_x_end[i]-R_x_end[i+1])
-            ind+=1
-         end
-        if i == length(R_x_end)
-             break
-        end
-    end
+    # fs = 1000
+    # R_R= fill(0.0, length(R_x_end)-1)
+    # ind = 1
+    # for i in collect(1:length(R_x_end))
+    #     if i < length(R_x_end)
+    #          R_R[ind]= abs(R_x_end[i]-R_x_end[i+1])
+    #         ind+=1
+    #      end
+    #     if i == length(R_x_end)
+    #          break
+    #     end
+    # end
     
-    mRR=(sum(R_R)/length(R_R)) *1000 #Сразу перейдем к миллисекундам
-    SDRR=std(R_R) * 1000
-    R=collect(1:length(R_R))
+    mRR=mean(R_x_end) *1000 #Сразу перейдем к миллисекундам
+    SDRR=std(R_x_end) * 1000
+    R=collect(1:length(R_x_end))
     S=0
     k=0
     S1=0
@@ -80,16 +80,16 @@ function variabilityR_R(R_x_end::Vector{Float64})
     rMSSD=0
     pNN50=0
     for i in R
-        if i < length(R_R)
-            S+= abs(R_R[i]-R_R[i+1])
-            if abs(R_R[i]-R_R[i+1]) > 0.050
+        if i < length(R_x_end)
+            S+= abs(R_x_end[i]-R_x_end[i+1])
+            if abs(R_x_end[i]-R_x_end[i+1]) > 0.050
                  k+=1
             end
-            S1+=(abs(R_R[i]-R_R[i+1]))^2
+            S1+=(abs(R_x_end[i]-R_x_end[i+1]))^2
         end
-        MSD=(S/(length(R_R)-1))
-        rMSSD=sqrt(S1/(length(R_R)-1))
-        pNN50=(k/(length(R_R)-1))
+        MSD=(S/(length(R_x_end)-1))
+        rMSSD=sqrt(S1/(length(R_x_end)-1))
+        pNN50=(k/(length(R_x_end)-1))
     end
 
     MSD=MSD*1000 # В миллисекундах

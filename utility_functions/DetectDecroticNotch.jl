@@ -7,52 +7,66 @@ function detectApDecroticNotch(signal_raw::Vector{Float64}, signal_bandpassed::V
     temp = Derivate(signal_bandpassed)
 
     for i in 1:length(ap_peaksX)
-
-        # tempX=collect(ap_peaksX[i]:ap_minsX[i])
-        Min = minimum(temp[ap_peaksX[i]:ap_minsX[i]])
-        firstMinimum = ap_peaksX[i] + findfirst(x -> x == Min, temp[ap_peaksX[i]:ap_minsX[i]])
-        k = 0
-        range = collect(firstMinimum:ap_minsX[i])
-        roughNotch = maximum(temp[firstMinimum:ap_minsX[i]])
-        for j in range
-            if temp[j] == roughNotch
-                notchesXCoordinates[i] = j
-                notchesYCoordinates[i] = temp[j]
-                break
+        peak = ap_peaksX[i]
+        minx = ap_minsX[i]
+        if peak < minx && minx <= length(temp)
+            range_indices = peak:minx
+            if !isempty(range_indices)
+                Min = minimum(temp[range_indices])
+                rel_idx = findfirst(x -> x == Min, temp[range_indices])
+                if rel_idx !== nothing
+                    firstMinimum = peak + rel_idx - 1
+                    if firstMinimum < minx
+                        rough_range = firstMinimum:minx
+                        roughNotch = maximum(temp[rough_range])
+                        for j in rough_range
+                            if temp[j] == roughNotch
+                                notchesXCoordinates[i] = j
+                                notchesYCoordinates[i] = temp[j]
+                                break
+                            end
+                        end
+                    end
+                end
             end
         end
-
-
     end
+
     notchesXCoordinates_updt = fill(0, length(notchesXCoordinates))
     notchesYCoordinates_updt = fill(0.0, length(notchesXCoordinates))
     for m in eachindex(notchesXCoordinates)
-        Min = minimum(signal_bandpassed[notchesXCoordinates[m]-100:notchesXCoordinates[m]])
-        range = collect(notchesXCoordinates[m]-100:notchesXCoordinates[m])
-        for n in range
-            if signal_bandpassed[n] == Min
-                notchesXCoordinates_updt[m] = n
-                notchesYCoordinates_updt[m] = signal_bandpassed[n]
+        x = notchesXCoordinates[m]
+        if x > 100
+            range = (x - 100):x
+            Min = minimum(signal_bandpassed[range])
+            for n in range
+                if signal_bandpassed[n] == Min
+                    notchesXCoordinates_updt[m] = n
+                    notchesYCoordinates_updt[m] = signal_bandpassed[n]
+                    break
+                end
             end
         end
-
     end
 
     notchesYCoordinates_updt_end = fill(0.0, length(notchesXCoordinates))
     notchesXCoordinates_updt_end = fill(0, length(notchesXCoordinates))
+    notchesXCoordinates_updt_end_raw = notchesXCoordinates_updt .+ 12449
 
-    notchesXCoordinates_updt_end_raw = notchesXCoordinates_updt .+ 12449  #TODO Прибавляем участок который исключали из сигнала ap0
     for m in eachindex(notchesXCoordinates_updt_end_raw)
-        Min = minimum(signal_raw[notchesXCoordinates_updt_end_raw[m]-100:notchesXCoordinates_updt_end_raw[m]])
-        range = collect(notchesXCoordinates_updt_end_raw[m]-100:notchesXCoordinates_updt_end_raw[m])
-        for n in range
-            if signal_raw[n] == Min
-                notchesXCoordinates_updt_end[m] = n
-                notchesYCoordinates_updt_end[m] = signal_raw[n]
+        x = notchesXCoordinates_updt_end_raw[m]
+        if x > 100 && x <= length(signal_raw)
+            range = (x - 100):x
+            Min = minimum(signal_raw[range])
+            for n in range
+                if signal_raw[n] == Min
+                    notchesXCoordinates_updt_end[m] = n
+                    notchesYCoordinates_updt_end[m] = signal_raw[n]
+                    break
+                end
             end
         end
-
     end
 
-    return notchesXCoordinates_updt_end # notchesYCoordinates_updt_end
+    return notchesXCoordinates_updt_end
 end
